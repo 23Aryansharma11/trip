@@ -1,26 +1,116 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  Define a smooth, clean, minimal light theme
+  with subtle neutral colors and gentle accents
+*/
 
 @theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* Radius */
+  --radius: 0.625rem;
+
+  /* Base Colors */
+  --background: oklch(96% 0.01 250);         /* Very light bluish-gray background */
+  --foreground: oklch(20% 0.01 250);         /* Dark grayish text */
+
+  /* Card/Surface */
+  --card: oklch(99% 0.005 260);               /* Slightly lighter than background */
+  --card-foreground: oklch(22% 0.01 260);    /* Near foreground */
+
+  /* Primary Brand Color - Soft Blue */
+  --primary: oklch(54% 0.07 240);             /* Soft blue */
+  --primary-foreground: oklch(98% 0 240);    /* Very light for text on primary */
+
+  /* Secondary - Cool Gray */
+  --secondary: oklch(85% 0.01 260);
+  --secondary-foreground: oklch(30% 0.01 260);
+
+  /* Muted - Light Gray */
+  --muted: oklch(93% 0.005 270);
+  --muted-foreground: oklch(50% 0.01 260);
+
+  /* Accent - Fresh Green */
+  --accent: oklch(55% 0.1 140);
+  --accent-foreground: oklch(98% 0 140);
+
+  /* Destructive - Soft Red */
+  --destructive: oklch(55% 0.12 30);
+
+  /* Borders and Inputs */
+  --border: oklch(80% 0.02 260);
+  --input: oklch(96% 0.01 260);
+  --ring: oklch(54% 0.07 240);
+}
+
+@layer base {
+  * {
+    @apply border-border m-0 p-0;
   }
-}
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  /* Minimal reset for consistent inputs and buttons */
+  input, button, select, textarea {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background-color: var(--input);
+    color: var(--foreground);
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  input:focus, button:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  button {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: oklch(calc(var(--primary-lightness, 0.54) - 0.05) 0.07 240);
+  }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Cards */
+  .card {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.5rem;
+    box-shadow: 0 1px 8px rgb(0 0 0 / 0.05);
+  }
 }
