@@ -1,28 +1,98 @@
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoginError } from "@/features/auth/components/login-error";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
 export default async function TripsPage() {
   const session = await auth();
+  const trips = await prisma.trip.findMany({
+    where: {
+      userId: session?.user?.id,
+    },
+  });
 
   if (!session) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[200px] text-foreground text-center p-6">
-        <p className="text-lg font-medium">
-          You are not logged in yet. Please sign in to access your trips and
-          planning tools.
-        </p>
-      </div>
-    );
+    return <LoginError />;
   }
+
+  const sortedTrips = [...trips].sort(
+    (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+  );
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingTrips = sortedTrips.filter(
+    (trip) => new Date(trip.startDate) >= today
+  );
 
   return (
     <div className="space-y-6 container mx-auto px-4 py-8">
-      <div>
-        <h1>Dashboard</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-bold text-2xl">Dashboard</h1>
         <Link href="/trips/new">
           <Button>New Trip</Button>
         </Link>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Welcome back, {session.user?.name}</CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <p>
+            {trips.length === 0
+              ? "Start planning your first trip by clicking the button above"
+              : `You have ${trips.length} ${
+                  trips.length == 1 ? "trip" : "trips"
+                } planned. ${
+                  upcomingTrips.length > 0
+                    ? `${upcomingTrips.length} upcoming.`
+                    : ""
+                }`}
+          </p>
+        </CardContent>
+      </Card>
+
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Your Recent Trips</h2>
+        {trips.length === 0 ? (
+          <Card>
+            <CardContent className=" flex flex-col items-center justify-center py-8">
+              <h3 className="text-xl font-medium mb-2">No trips yet</h3>
+              <p className="text-center mb-4 max-w-md">
+                Start planning your new adventures
+              </p>
+              <Link href="/trips/new">
+                <Button>Create Trip</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sortedTrips.slice(0, 6).map((trip, key) => (
+              <Link href={`/trips/${trip.id}`} key={key}>
+                <Card className="h-full hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <CardTitle className="line-clamp-1">{trip.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm mb-2 line-clamp-2">
+                      {trip.description}
+                    </p>
+                    <div className="text-sm">
+                      {new Date(trip.startDate).toLocaleDateString()} -{" "}
+                      {new Date(trip.endDate).toLocaleDateString()}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ export function Navbar({ session }: { session: Session | null }) {
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
-    <nav className="bg-background text-foreground border-b border-border shadow-sm">
+    <nav className="bg-background text-foreground border-b border-border shadow-sm max-h-16">
       <div className="container mx-auto flex items-center justify-between px-4 py-4 lg:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
