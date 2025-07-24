@@ -14,6 +14,7 @@ export async function createTrip(formData: FormData) {
   const description = formData.get("description")?.toString();
   const startDateStr = formData.get("startDate")?.toString();
   const endDateStr = formData.get("endDate")?.toString();
+  const imageUrl = formData.get("image_url")?.toString();
 
   if (!title || !description || !startDateStr || !endDateStr) {
     throw new Error("All fields are required");
@@ -28,6 +29,7 @@ export async function createTrip(formData: FormData) {
       description,
       startDate,
       endDate,
+      imageUrl,
       userId: session.user.id,
     },
   });
