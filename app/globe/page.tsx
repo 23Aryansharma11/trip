@@ -25,12 +25,13 @@ export default function GlobePage() {
       try {
         const response = await fetch("/api/trips");
         const data = await response.json();
-        const locationsArray = data.transformedLocations; // get the array inside object
+        const locationsArray =
+          data.transformedLocations as TransformedLocation[];
 
         setLocations(locationsArray);
 
-        const countries = new Set(
-          locationsArray.map((loc: TransformedLocation) => loc.country)
+        const countries: Set<string> = new Set(
+          locationsArray.map((loc) => loc.country)
         );
 
         setVisitedCountries(countries);
