@@ -82,7 +82,7 @@ model Trip {
 
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  Location  Location[]
+  locations  Location[]
 }
 
 model Location {

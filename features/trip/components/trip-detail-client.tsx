@@ -1,15 +1,20 @@
 "use client";
-import { Trip } from "@/app/generated/prisma";
+import { Location, Trip } from "@/app/generated/prisma";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { Calendar, Plus } from "lucide-react";
+import { Calendar, MapPin, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { Map } from "./map";
+import { SortableItinerary } from "./sortable-itinerary";
 
+export type TripWithLocation = Trip & {
+  locations: Location[];
+};
 interface TripDetailClientProps {
-  trip: Trip;
+  trip: TripWithLocation;
 }
 
 export const TripDetailsClient = ({ trip }: TripDetailClientProps) => {
@@ -98,10 +103,46 @@ export const TripDetailsClient = ({ trip }: TripDetailClientProps) => {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start"></div>
+                  <div className="flex items-start">
+                    <MapPin className="h-6 mr-3 w-6 text-gray-500" />
+                    <div className="">
+                      <p>Destinations</p>
+                      <p>
+                        {trip.locations.length}{" "}
+                        {trip.locations.length == 1 ? "Location" : "Locations"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <div className="h-72 rounded-lg overflow-hidden shadow">
+                <Map itineraries={trip.locations} />
+              </div>
+              {trip.locations.length == 0 && (
+                <div className="text-center p-4">
+                  <p>Add locations to see them on the map</p>
+                </div>
+              )}
+
+              <div>
+                <p className="text-gray-600 leading-relaxed">
+                  {trip.description}
+                </p>
+              </div>
             </div>
+          </TabsContent>
+          <TabsContent value="itinerary" className="space-y-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold">Full Itinerary</h2>
+            </div>
+
+            {trip.locations.length == 0 ? (
+              <div className="text-center p-4">
+                <p>Add locations </p>
+              </div>
+            ) : (
+              <SortableItinerary locations={trip.locations} tripId={trip.id} />
+            )}
           </TabsContent>
         </Tabs>
       </div>

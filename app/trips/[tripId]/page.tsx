@@ -1,6 +1,9 @@
 import { auth } from "@/auth";
 import { LoginError } from "@/features/auth/components/login-error";
-import { TripDetailsClient } from "@/features/trip/components/trip-detail-client";
+import {
+  TripDetailsClient,
+  TripWithLocation,
+} from "@/features/trip/components/trip-detail-client";
 import { prisma } from "@/lib/prisma";
 
 export default async function TripDetails({
@@ -19,6 +22,7 @@ export default async function TripDetails({
       id: tripId,
       userId: session.user?.id,
     },
+    include: { locations: true },
   });
   if (!trip) {
     return (
