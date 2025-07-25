@@ -23,7 +23,7 @@ export const ourFileRouter = {
       // Pass the userId to onUploadComplete callback as metadata
       return { userId: session.user.id };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ metadata }) => {
         return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;
