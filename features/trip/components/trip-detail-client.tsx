@@ -3,12 +3,14 @@ import { Location, Trip } from "@/app/generated/prisma";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { Calendar, MapPin, Plus } from "lucide-react";
+import { Calendar, MapPin, Plus, Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Map } from "./map";
 import { SortableItinerary } from "./sortable-itinerary";
+import { useRouter } from "next/navigation";
+import { deleteTrip } from "../actions/delete-trip";
 
 export type TripWithLocation = Trip & {
   locations: Location[];
@@ -18,7 +20,9 @@ interface TripDetailClientProps {
 }
 
 export const TripDetailsClient = ({ trip }: TripDetailClientProps) => {
+  const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState("overview");
+  const router = useRouter();
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
       {trip.imageUrl && (
@@ -50,13 +54,31 @@ export const TripDetailsClient = ({ trip }: TripDetailClientProps) => {
           </div>
         </div>
 
-        <div className="mt-4 md:mt-0">
+        <div className="mt-4 md:mt-0 flex justify-center items-center gap-3">
           <Link href={`/trips/${trip.id}/itinerary/new`}>
             <Button>
               <Plus className="h-5 w-5 mr-2" />
               Add Location
             </Button>
           </Link>
+          <form
+            action={(formData: FormData) => {
+              formData.append("tripId", trip.id);
+              startTransition(() => {
+                deleteTrip(formData);
+              });
+
+              router.push("/trips");
+            }}
+          >
+            <Button
+              className="hover:text-red-600"
+              size="icon"
+              variant={"ghost"}
+            >
+              <Trash />
+            </Button>
+          </form>
         </div>
       </div>
 
