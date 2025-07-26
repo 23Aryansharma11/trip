@@ -8,7 +8,7 @@ export default function LandingPage() {
       {/* Main Content */}
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-b from-white to-blue-50 py-20 md:py-32">
+        <section className=" bg-gradient-to-b from-white to-blue-50 py-20 md:py-32">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -18,13 +18,7 @@ export default function LandingPage() {
                 Create itineraries, organize destinations, and share your travel
                 plans all in one place.
               </p>
-              {/* Call to Action Button */}
-              <button
-                type="button"
-                className="inline-block bg-blue-600 text-white hover:bg-blue-700 px-8 py-3 rounded-lg text-lg font-semibold transition-colors duration-200"
-              >
-                Get Started
-              </button>
+
             </div>
           </div>
           {/* Decorative clipped background */}

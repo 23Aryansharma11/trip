@@ -134,6 +134,11 @@ button {
     box-shadow: 0 1px 8px rgb(0 0 0 / 0.05);
   }
 }
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 
 /*
   ---break---
