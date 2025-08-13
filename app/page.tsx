@@ -149,7 +149,8 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-            © 2024 TripCraft. All rights reserved. Made with ❤️ for travelers.
+            © {new Date().getFullYear()} TripCraft. All rights reserved. Made
+            with ❤️ for travelers.
           </div>
         </div>
       </footer>
