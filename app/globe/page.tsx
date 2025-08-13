@@ -1,133 +1,17 @@
-"use client";
+import { auth } from "@/auth";
+import { LoginError } from "@/features/auth/components/login-error";
+import { GlobeComponent } from "@/features/globe/component/globe-component";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import Globe, { GlobeMethods } from "react-globe.gl";
-
-export interface TransformedLocation {
-  lat: number;
-  lng: number;
-  name: string;
-  country: string;
-}
-
-export default function GlobePage() {
-  const globeRef = useRef<GlobeMethods | undefined>(undefined);
-
-  const [visitedCountries, setVisitedCountries] = useState<Set<string>>(new Set());
-  const [locations, setLocations] = useState<TransformedLocation[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const response = await fetch("/api/trips");
-        const data = await response.json();
-        const locationsArray = data.transformedLocations as TransformedLocation[];
-
-        setLocations(locationsArray);
-
-        const countries = new Set(locationsArray.map((loc) => loc.country));
-        setVisitedCountries(countries);
-      } catch (err) {
-        console.error("Error fetching locations:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLocations();
-  }, []);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (globeRef.current) {
-        globeRef.current.controls().autoRotate = true;
-        globeRef.current.controls().autoRotateSpeed = 5;
-      }
-    }, 100);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
+const GlobePage = async () => {
+  const session = await auth();
+  if (!session) {
+    return <LoginError />;
+  }
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-center text-4xl font-bold mb-12">Your Travel Journey</h1>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            {/* Globe Section */}
-            <div className="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-2xl font-semibold mb-4">See where you've been...</h2>
-
-                <div className="w-full h-[400px] sm:h-[500px] md:h-[600px] relative">
-                  {isLoading ? (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
-                    </div>
-                  ) : (
-                    <Globe
-                      ref={globeRef}
-                      globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-                      bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
-                      backgroundColor="rgba(0,0,0,0)"
-                      pointColor={() => "#FF5733"}
-                      pointLabel="name"
-                      pointsData={locations}
-                      pointRadius={0.2}
-                      pointAltitude={0.1}
-                      pointsMerge={true}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Countries List */}
-            <div className="lg:col-span-1">
-              <Card className="sticky top-8">
-                <CardHeader>
-                  <CardTitle>Countries Visited</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="bg-blue-50 p-4 rounded-lg">
-                        <p className="text-sm text-blue-800">
-                          You've visited{" "}
-                          <span className="font-bold">{visitedCountries.size}</span>{" "}
-                          {visitedCountries.size === 1 ? "country" : "countries"}.
-                        </p>
-                      </div>
-
-                      <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2">
-                        {Array.from(visitedCountries)
-                          .sort()
-                          .map((country, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-2 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100"
-                            >
-                              <MapPin className="h-4 w-4 text-red-500" />
-                              <span className="font-medium">{country}</span>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div>
+      <GlobeComponent />
     </div>
   );
-}
+};
+
+export default GlobePage;

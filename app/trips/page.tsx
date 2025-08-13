@@ -7,15 +7,16 @@ import Link from "next/link";
 
 export default async function TripsPage() {
   const session = await auth();
+   if (!session) {
+    return <LoginError />;
+  }
   const trips = await prisma.trip.findMany({
     where: {
       userId: session?.user?.id,
     },
   });
 
-  if (!session) {
-    return <LoginError />;
-  }
+
 
   const sortedTrips = [...trips].sort(
     (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
