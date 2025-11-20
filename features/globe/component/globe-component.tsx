@@ -1,55 +1,58 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, GlobeIcon, Users, Calendar } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
-import Globe, { type GlobeMethods } from "react-globe.gl"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MapPin, GlobeIcon, Users, Calendar } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import Globe, { type GlobeMethods } from "react-globe.gl";
 
 export interface TransformedLocation {
-  lat: number
-  lng: number
-  name: string
-  country: string
+  lat: number;
+  lng: number;
+  name: string;
+  country: string;
 }
 
-export  function GlobeComponent() {
-  const globeRef = useRef<GlobeMethods | undefined>(undefined)
+export function GlobeComponent() {
+  const globeRef = useRef<GlobeMethods | undefined>(undefined);
 
-  const [visitedCountries, setVisitedCountries] = useState<Set<string>>(new Set())
-  const [locations, setLocations] = useState<TransformedLocation[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [visitedCountries, setVisitedCountries] = useState<Set<string>>(
+    new Set()
+  );
+  const [locations, setLocations] = useState<TransformedLocation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const response = await fetch("/api/trips")
-        const data = await response.json()
-        const locationsArray = data.transformedLocations as TransformedLocation[]
+        const response = await fetch("/api/trips");
+        const data = await response.json();
+        const locationsArray =
+          data.transformedLocations as TransformedLocation[];
 
-        setLocations(locationsArray)
+        setLocations(locationsArray);
 
-        const countries = new Set(locationsArray.map((loc) => loc.country))
-        setVisitedCountries(countries)
+        const countries = new Set(locationsArray.map((loc) => loc.country));
+        setVisitedCountries(countries);
       } catch (err) {
-        console.error("Error fetching locations:", err)
+        console.error("Error fetching locations:", err);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchLocations()
-  }, [])
+    fetchLocations();
+  }, []);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (globeRef.current) {
-        globeRef.current.controls().autoRotate = true
-        globeRef.current.controls().autoRotateSpeed = 2
+        globeRef.current.controls().autoRotate = true;
+        globeRef.current.controls().autoRotateSpeed = 2;
       }
-    }, 100)
+    }, 100);
 
-    return () => clearTimeout(timeout)
-  }, [])
+    return () => clearTimeout(timeout);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
@@ -72,8 +75,8 @@ export  function GlobeComponent() {
               Your Travel Journey
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore the world through your adventures. See all the amazing places you've visited on our interactive
-              globe.
+              Explore the world through your adventures. See all the amazing
+              places you've visited on our interactive globe.
             </p>
           </div>
 
@@ -92,7 +95,9 @@ export  function GlobeComponent() {
                             style={{ animationDuration: "1.5s" }}
                           />
                         </div>
-                        <p className="mt-4 text-lg font-medium">Loading your journey...</p>
+                        <p className="mt-4 text-lg font-medium">
+                          Loading your journey...
+                        </p>
                       </div>
                     ) : (
                       <Globe
@@ -124,7 +129,9 @@ export  function GlobeComponent() {
                     <div className="flex items-center gap-2">
                       <MapPin className="h-5 w-5" />
                       <div>
-                        <p className="text-2xl font-bold">{visitedCountries.size}</p>
+                        <p className="text-2xl font-bold">
+                          {visitedCountries.size}
+                        </p>
                         <p className="text-sm opacity-90">Countries</p>
                       </div>
                     </div>
@@ -163,9 +170,20 @@ export  function GlobeComponent() {
                     <div className="space-y-4">
                       <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-100">
                         <p className="text-sm text-gray-700">
-                          Amazing! You've explored{" "}
-                          <span className="font-bold text-orange-600">{visitedCountries.size}</span>{" "}
-                          {visitedCountries.size === 1 ? "country" : "countries"} around the world.
+                          {visitedCountries.size > 0 ? (
+                            <>
+                              <span>Amazing! You've explored </span>
+                              <span className="font-bold text-orange-600">
+                                {visitedCountries.size}
+                              </span>{" "}
+                              {visitedCountries.size === 1
+                                ? "country"
+                                : "countries"}{" "}
+                              around the world.
+                            </>
+                          ) : (
+                            <span>You haven't visited any country</span>
+                          )}
                         </p>
                       </div>
 
@@ -195,5 +213,5 @@ export  function GlobeComponent() {
         </div>
       </div>
     </div>
-  )
+  );
 }
